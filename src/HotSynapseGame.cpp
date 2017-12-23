@@ -4,6 +4,7 @@
 #include "MatchScreen.hpp"
 
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -30,14 +31,18 @@ void HotSynapseGame::main_loop()
     gameClosed = false;
     gameState = GameState::Match;
     gameScreen = new MatchScreen(window);
-    
+    std::vector<sf::Event::KeyEvent> keyList;
     while (window->isOpen())
     {
+	keyList.clear();
         sf::Event event;
         while (window->pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
                 window->close();
+	    
+	    if (event.type == sf::Event::KeyPressed)
+		keyList.push_back(event.key);
         }
 
 	switch (gameState)
@@ -48,7 +53,7 @@ void HotSynapseGame::main_loop()
 	    {
 		cout << "Went from Match" << endl;
 	    }
-	    gameScreen->update();
+	    gameScreen->update(keyList);
 	    break;
 
 	default:

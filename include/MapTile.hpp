@@ -8,7 +8,9 @@ enum class TileType
     Empty,
     Wall,
     Window,
-    Halfwall
+    Halfwall,
+    Soldier,
+    Occupancy
 };
 
 class MapTile
@@ -17,7 +19,7 @@ public:
     virtual ~MapTile();
     
     TileType getType();
-    virtual sf::Shape* getDrawShape() = 0;
+    virtual sf::Shape* getDrawShape();
 
 protected:
     TileType tileType;

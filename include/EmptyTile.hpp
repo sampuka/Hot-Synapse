@@ -9,7 +9,7 @@ public:
     EmptyTile();
     ~EmptyTile();
 
-    sf::Shape* getDrawShape() override;
+//    sf::Shape* getDrawShape() override;
 };
 
 #endif

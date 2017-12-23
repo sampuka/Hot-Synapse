@@ -2,6 +2,7 @@
 
 WallTile::WallTile(sf::Color _color, float _hardness)
 {
+    tileType = TileType::Wall;
     color = _color;
     hardness = _hardness;
 }

@@ -9,8 +9,7 @@ EmptyTile::~EmptyTile()
 {
 }
 
-
-
+/*
 sf::Shape* EmptyTile::getDrawShape()
 {
     sf::RectangleShape *shape = new sf::RectangleShape(sf::Vector2f(10,10));
@@ -18,3 +17,4 @@ sf::Shape* EmptyTile::getDrawShape()
     
     return shape;
 }
+*/
