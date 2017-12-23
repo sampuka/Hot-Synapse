@@ -18,6 +18,7 @@ public:
 private:
     sf::RenderWindow *window;
     MatchMap *map;
+    float i;
 };
 
 #endif
