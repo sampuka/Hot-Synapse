@@ -9,10 +9,10 @@ LDIR =../lib
 
 LIBS=-lm -lsfml-system -lsfml-audio -lsfml-graphics -lsfml-window 
 
-_DEPS = HotSynapseGame.hpp GameScreen.hpp MatchScreen.hpp MatchMap.hpp MapEntity.hpp MapWall.hpp
+_DEPS = HotSynapseGame.hpp GameScreen.hpp MatchScreen.hpp MatchMap.hpp MapTile.hpp EmptyTile.hpp WallTile.hpp
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = hotsynapse.o HotSynapseGame.o MatchScreen.o MatchMap.o MapEntity.o MapWall.o
+_OBJ = hotsynapse.o HotSynapseGame.o MatchScreen.o MatchMap.o MapTile.o EmptyTile.o WallTile.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 hotsynapse: $(OBJ)

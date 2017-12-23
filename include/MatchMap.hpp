@@ -1,7 +1,8 @@
 #ifndef MATCH_MAP_H
 #define MATCH_MAP_H
 
-#include "MapEntity.hpp"
+//#include "MapEntity.hpp"
+#include "MapTile.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <string>
@@ -18,8 +19,10 @@ public:
     
 private:
     std::string mapName;
+    sf::Vector2i mapsize;
     sf::Color backgroundColor;
-    std::vector<MapEntity*> entityList;
+    std::vector< std::vector<MapTile*> > tileArray;
+//    MapTile*** tileArray;
 };
 
 #endif
