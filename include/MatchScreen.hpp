@@ -8,7 +8,11 @@
 
 enum class MatchScreenState
 {
-    SoldierInput,
+    StartOfMatch,
+    Player1Move,
+    Player1Action,
+    Player2Move,
+    Player2Action,
     Animation
 };
 
@@ -24,11 +28,17 @@ public:
 private:
     MatchScreenState currentState;
     int activeSoldier;
-    int movesLeft;
+    //int movesLeft;
     
     sf::RenderWindow *window;
-    MatchMap *map;
-    float i;
+    MatchMap *mastermap;
+    MatchMap *player1map;
+    MatchMap *player2map;
+
+    std::vector<Direction> moveList;
+    sf::Vector2i actionTile;
+    
+    float i; //For the test circle animation
 };
 
 #endif
