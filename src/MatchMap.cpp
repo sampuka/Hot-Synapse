@@ -131,6 +131,7 @@ void MatchMap::spawnSoldier(int xpos, int ypos)
     soldiers.push_back(sf::Vector2i(xpos, ypos));
 }
 
+
 bool MatchMap::moveSoldier(int soldierNumber, Direction dir)
 {
     cout << "Moving Soldier" << endl;
@@ -151,11 +152,59 @@ bool MatchMap::moveSoldier(int soldierNumber, Direction dir)
 	else
 	    return false;
 	break;
+	
+    case Direction::W:
+	if (
+	    isTileClear(soldierPos.x-1, soldierPos.y  ) &&
+	    isTileClear(soldierPos.x-1, soldierPos.y+1)
+	    )
+	{
+	    setEmptyTile(soldierPos.x+2, soldierPos.y  );
+	    setEmptyTile(soldierPos.x+2, soldierPos.y+1);
+	    spawnSoldier(soldierPos.x-1, soldierPos.y); //WHOOPS
+	    return true;
+	}
+	else
+	    return false;
+	break;
 
     default:
 	cout << "Unhandled direction" << endl;
 	return false;
     }
+}
+
+
+int MatchMap::getSoldiers()
+{
+    return 4; //soldierList.size() probably
+}
+
+sf::Vector2i MatchMap::getPosition(int soldier)
+{
+    return sf::Vector2i(10, 10); //soldierList[soldier].getPosition();
+}
+
+bool MatchMap::canMoveSoldier(int activeSoldier, std::vector<Direction> moves)
+{
+    return true;
+}
+
+void MatchMap::setupMaps(string mapName, MatchMap **mastermap, MatchMap **player1map, MatchMap **player2map, sf::Vector2u windowsize)
+{
+    (*mastermap) = new MatchMap(mapName, windowsize);
+    (*player1map) = new MatchMap(mapName, windowsize);
+    (*player2map) = new MatchMap(mapName, windowsize);
+}
+
+void MatchMap::executeMove(int activeSoldier, Direction dir)
+{
+    moveSoldier(activeSoldier, dir);
+}
+
+void MatchMap::executeAction(int activeSoldier, sf::Vector2i actionTile, ActionType action)
+{
+    cout << "Action on tile (" << actionTile.x << "," << actionTile.y << ") from soldier " << activeSoldier << endl;
 }
 
 bool MatchMap::isTileClear(int xpos, int ypos)

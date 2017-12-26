@@ -60,7 +60,7 @@ void HotSynapseGame::main_loop()
 	    cout << "Not Match gameState?" << endl;
 	    break;
 	}
-	sf::sleep(sf::milliseconds(50)); //20 FPS (max)
+	sf::sleep(sf::milliseconds(200)); //5 FPS (max)
 	window->display();
 	window->clear();
 	

@@ -5,20 +5,57 @@
 
 using namespace std;
 
+ostream& operator<<(ostream& os, const MatchScreenState& state)
+{
+    switch (state)
+    {
+    case MatchScreenState::StartOfMatch:
+	os << "StartOfMatch";
+	break;
+	
+    case MatchScreenState::Player1Move:
+	os << "Player1Move";
+	break;
+	
+    case MatchScreenState::Player1Action:
+	os << "Player1Action";
+	break;
+	
+    case MatchScreenState::Player2Move:
+	os << "Player2Move";
+	break;
+	
+    case MatchScreenState::Player2Action:
+	os << "Player2Action";
+	break;
+	
+    case MatchScreenState::Animation:
+	os << "Animation";
+	break;
+
+    default:
+	os << "Unhandled State (in ostream overload)";
+    }
+
+    return os;
+}
+
 MatchScreen::MatchScreen(sf::RenderWindow *_window)
 {
+    maxMoves = 5;
+    movesExecuted = 0;
     activeSoldier = -1;
     currentState = MatchScreenState::StartOfMatch;
     window = _window;
     i = 0;
     
     //Init game
-    MatchMap::setupMaps("Test Map", &mastermap, &player1map, &player2map);
+    MatchMap::setupMaps("Test Map", &mastermap, &player1map, &player2map, window->getSize());
     mastermap->getSoldiers();
     /*
-    mastermap = new MatchMap("Test Map", window->getSize(), 0);
-    player1map = new MatchMap("Test Map", window->getSize(), 1);
-    player2map = new MatchMap("Test Map", window->getSize(), 2);
+      mastermap = new MatchMap("Test Map", window->getSize(), 0);
+      player1map = new MatchMap("Test Map", window->getSize(), 1);
+      player2map = new MatchMap("Test Map", window->getSize(), 2);
     */
 }
 
@@ -31,15 +68,18 @@ MatchScreen::~MatchScreen()
 
 void MatchScreen::update(vector<sf::Event::KeyEvent> keyList)
 {
+    cout << "Current state: " << currentState << endl;
+    
     mastermap->drawMap(window);
 
     for (sf::Event::KeyEvent key : keyList)
     {
+	//Handle keyboard input switch
 	switch(currentState)
 	{
 	case MatchScreenState::StartOfMatch:
 	    if (key.code == sf::Keyboard::Return)
-		currentState = MatchScreenState::Player1Input;
+		currentState = MatchScreenState::Player1Move;
 	    break;
 	    
 	case MatchScreenState::Player1Move:
@@ -49,11 +89,11 @@ void MatchScreen::update(vector<sf::Event::KeyEvent> keyList)
 	    switch (key.code)
 	    {
 	    case sf::Keyboard::D:
-		moveList.push_back(Direction::E);
+		player1moves.push_back(Direction::E);
 		break;
 
 	    case sf::Keyboard::A:
-	        moveList.push_back(Direction::W);
+	        player1moves.push_back(Direction::W);
 		break;
 
 	    case sf::Keyboard::Return:
@@ -64,32 +104,32 @@ void MatchScreen::update(vector<sf::Event::KeyEvent> keyList)
 		cout << "Unhandled key" << endl;
 	    }
 
-	    if (moveList.size() > 5)
+	    if (player1moves.size() > maxMoves)
 	    {
-		moveList.pop_back();
+		player1moves.pop_back();
 		cout << "No more movement actions!" << endl;
 	    }
 	    
-	    if (!player1map->canMoveSoldier(activeSoldier, moveList))
-	    {
+	    if (!mastermap->canMoveSoldier(activeSoldier, player1moves))
+	    { ///BØR NOK VÆRE player1map
 		cout << "Can't move there!" << endl;
-		moveList.pop_back();
+		player1moves.pop_back();
 	    }
 	    
 	    break;
 
 	case MatchScreenState::Player1Action:
-	    if (actionTile == sf::Vector2i(-1, -1))
-		actionTile = getPosition(activeSoldier);
+	    if (player1actionTile == sf::Vector2i(-1, -1))
+		player1actionTile = mastermap->getPosition(activeSoldier);
 
 	    switch (key.code)
 	    {
 	    case sf::Keyboard::D:
-		actionTile.x++;
+		player1actionTile.x++;
 		break;
 
 	    case sf::Keyboard::A:
-	        actionTile.x--;
+	        player1actionTile.x--;
 		break;
 
 	    case sf::Keyboard::Return:
@@ -101,26 +141,48 @@ void MatchScreen::update(vector<sf::Event::KeyEvent> keyList)
 	    }
 
 	    break;
-
-	case MatchScreenState::Animation:
-	    mastermap->executeTurn(moveList, actionTile, ActionType::Shoot);
-	    break;
 	    
 	default:
 	    cout << "Unhandled state" << endl;
 	}
     }
 
+    //Update things switch
     switch(currentState)
     {
     case MatchScreenState::Animation:
-    case MatchScreenState::StartOfGame:
+	if (movesExecuted < maxMoves)
+	{
+	    mastermap->executeMove(activeSoldier, player1moves[movesExecuted]);
+	    movesExecuted++;
+	}
+	else
+	{
+	    mastermap->executeAction(activeSoldier, player1actionTile, ActionType::Shoot);
+	    movesExecuted = 0;
+	    player1moves.clear();
+	    player1actionTile = sf::Vector2i(-1, -1);
+	    currentState = MatchScreenState::Player1Move;
+	}
+	    
+	break;
+
+    default:
+	break;
+	}
+    
+    //What to display switch
+    switch(currentState)
+    {
+    case MatchScreenState::Animation:
+    case MatchScreenState::StartOfMatch:
 	mastermap->drawMap(window);
 	break;
 
     case MatchScreenState::Player1Move:
     case MatchScreenState::Player1Action:
-	player1map->drawMap(window);
+	mastermap->drawMap(window);
+	//player1map->drawMap(window);
 	break;
 
     case MatchScreenState::Player2Move:

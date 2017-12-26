@@ -28,15 +28,16 @@ public:
 private:
     MatchScreenState currentState;
     int activeSoldier;
-    //int movesLeft;
+    unsigned int maxMoves;
+    unsigned int movesExecuted;
     
     sf::RenderWindow *window;
     MatchMap *mastermap;
     MatchMap *player1map;
     MatchMap *player2map;
 
-    std::vector<Direction> moveList;
-    sf::Vector2i actionTile;
+    std::vector<Direction> player1moves;
+    sf::Vector2i player1actionTile;
     
     float i; //For the test circle animation
 };
