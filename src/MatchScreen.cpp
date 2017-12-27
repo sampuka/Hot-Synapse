@@ -83,9 +83,10 @@ void MatchScreen::update(vector<sf::Event::KeyEvent> keyList)
 	    break;
 	    
 	case MatchScreenState::Player1Move:
-	    if (activeSoldier == -1)
-		activeSoldier = 0;
-	    
+	    //if (activeSoldier == -1)
+		//activeSoldier = 0;
+	    activeSoldier = mastermap->nextSoldier();
+		
 	    switch (key.code)
 	    {
 	    case sf::Keyboard::D:
@@ -151,7 +152,7 @@ void MatchScreen::update(vector<sf::Event::KeyEvent> keyList)
     switch(currentState)
     {
     case MatchScreenState::Animation:
-	if (movesExecuted < maxMoves)
+	if ((movesExecuted < maxMoves) && (movesExecuted < player1moves.size()))
 	{
 	    mastermap->executeMove(activeSoldier, player1moves[movesExecuted]);
 	    movesExecuted++;
@@ -161,6 +162,7 @@ void MatchScreen::update(vector<sf::Event::KeyEvent> keyList)
 	    mastermap->executeAction(activeSoldier, player1actionTile, ActionType::Shoot);
 	    movesExecuted = 0;
 	    player1moves.clear();
+	    player1moves = {};
 	    player1actionTile = sf::Vector2i(-1, -1);
 	    currentState = MatchScreenState::Player1Move;
 	}

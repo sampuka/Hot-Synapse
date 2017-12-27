@@ -52,6 +52,8 @@ MatchMap::MatchMap(string _mapName, sf::Vector2u windowsize)
 	}
 
 	spawnSoldier(2, 2);
+	spawnSoldier(4, 4);
+	spawnSoldier(6, 6);
 
 	cout << "Made \"Test Map\"" << endl;
     }
@@ -124,18 +126,19 @@ void MatchMap::setWallTile(int xpos, int ypos, sf::Color color, float hardness)
 void MatchMap::spawnSoldier(int xpos, int ypos)
 {
     setSoldierTile  (xpos, ypos);
-    setOccupancyTile(xpos+1, ypos  , xpos, ypos);
-    setOccupancyTile(xpos  , ypos+1, xpos, ypos);
-    setOccupancyTile(xpos+1, ypos+1, xpos, ypos);
+    //setOccupancyTile(xpos+1, ypos  , xpos, ypos);
+    //setOccupancyTile(xpos  , ypos+1, xpos, ypos);
+    //setOccupancyTile(xpos+1, ypos+1, xpos, ypos);
 
-    soldiers.push_back(sf::Vector2i(xpos, ypos));
+    soldiers.push_back(Soldier(xpos, ypos));
+    //soldiers.push_back(sf::Vector2i(xpos, ypos));
 }
 
 
 bool MatchMap::moveSoldier(int soldierNumber, Direction dir)
 {
     cout << "Moving Soldier" << endl;
-    sf::Vector2i soldierPos = soldiers[soldierNumber]; //segfault possible?
+    sf::Vector2i soldierPos = soldiers[soldierNumber].getPosition(); //segfault possible?
     switch (dir)
     {
     case Direction::E:
@@ -146,7 +149,8 @@ bool MatchMap::moveSoldier(int soldierNumber, Direction dir)
 	{
 	    setEmptyTile(soldierPos.x, soldierPos.y  );
 	    setEmptyTile(soldierPos.x, soldierPos.y+1);
-	    spawnSoldier(soldierPos.x+1, soldierPos.y);
+	    setSoldierTile(soldierPos.x+1, soldierPos.y);
+	    soldiers[soldierNumber].setPosition(soldierPos.x+1, soldierPos.y);
 	    return true;
 	}
 	else
@@ -161,7 +165,8 @@ bool MatchMap::moveSoldier(int soldierNumber, Direction dir)
 	{
 	    setEmptyTile(soldierPos.x+2, soldierPos.y  );
 	    setEmptyTile(soldierPos.x+2, soldierPos.y+1);
-	    spawnSoldier(soldierPos.x-1, soldierPos.y); //WHOOPS
+	    setSoldierTile(soldierPos.x-1, soldierPos.y);
+	    soldiers[soldierNumber].setPosition(soldierPos.x-1, soldierPos.y);
 	    return true;
 	}
 	else
@@ -169,7 +174,7 @@ bool MatchMap::moveSoldier(int soldierNumber, Direction dir)
 	break;
 
     default:
-	cout << "Unhandled direction" << endl;
+	cout << "Unhandled direction in moveSoldier()" << endl;
 	return false;
     }
 }
@@ -190,6 +195,20 @@ bool MatchMap::canMoveSoldier(int activeSoldier, std::vector<Direction> moves)
     return true;
 }
 
+int MatchMap::nextSoldier()
+{
+    for (unsigned int i = 0; i < soldiers.size(); i++)
+	if (!soldiers[i].isReadyToMove())
+	{
+	    //soldiers[i].setMoved(true);
+	    return i;
+	}
+    cout << "All soldiers moved!" << endl;
+    for (unsigned int i = 0; i < soldiers.size(); i++)
+	soldiers[i].setMoved(false);
+    return 0;
+}
+
 void MatchMap::setupMaps(string mapName, MatchMap **mastermap, MatchMap **player1map, MatchMap **player2map, sf::Vector2u windowsize)
 {
     (*mastermap) = new MatchMap(mapName, windowsize);
@@ -200,6 +219,7 @@ void MatchMap::setupMaps(string mapName, MatchMap **mastermap, MatchMap **player
 void MatchMap::executeMove(int activeSoldier, Direction dir)
 {
     moveSoldier(activeSoldier, dir);
+    soldiers[activeSoldier].setMoved(true);
 }
 
 void MatchMap::executeAction(int activeSoldier, sf::Vector2i actionTile, ActionType action)
@@ -218,6 +238,9 @@ void MatchMap::setSoldierTile(int xpos, int ypos)
 {
     delete tileArray[xpos][ypos];
     tileArray[xpos][ypos] = new SoldierTile;
+    setOccupancyTile(xpos+1, ypos  , xpos, ypos);
+    setOccupancyTile(xpos  , ypos+1, xpos, ypos);
+    setOccupancyTile(xpos+1, ypos+1, xpos, ypos);
 }
 
 void MatchMap::setOccupancyTile(int xpos, int ypos, int xppos, int yppos)

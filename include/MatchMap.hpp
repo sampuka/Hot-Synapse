@@ -37,6 +37,7 @@ public:
     int getSoldiers();
     sf::Vector2i getPosition(int soldier);
     bool canMoveSoldier(int activeSoldier, std::vector<Direction> moves);
+    int nextSoldier();
 
     static void setupMaps(std::string _mapName, MatchMap **mastermap, MatchMap **player1map, MatchMap **player2map, sf::Vector2u windowsize);
 
@@ -53,7 +54,8 @@ private:
     sf::Color backgroundColor;
     std::vector< std::vector<MapTile*> > tileArray;
 
-    std::vector<sf::Vector2i> soldiers;
+    //std::vector<sf::Vector2i> soldiers;
+    std::vector<Soldier> soldiers;
 };
 
 #endif
